@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Message {
-    private final UUID id;
+    private final UUID id; //메세지가 어떻게 흘러가는지 추적하기 위해 사용
     private final Map<String, Object> payload;
     private final Instant timestamp;
 
