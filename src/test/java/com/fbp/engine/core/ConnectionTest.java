@@ -71,12 +71,10 @@ public class ConnectionTest {
 
         connection.setTarget(target);
 
-        // 순차적으로 deliver
         connection.deliver(new Message(Map.of("seq", 1)));
         connection.deliver(new Message(Map.of("seq", 2)));
         connection.deliver(new Message(Map.of("seq", 3)));
 
-        // 들어온 순서가 1, 2, 3인지 확인 (Queue의 FIFO 검증)
         assertEquals(1, result.get(0));
         assertEquals(2, result.get(1));
         assertEquals(3, result.get(2));
