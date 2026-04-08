@@ -23,7 +23,6 @@ class PrintNodeTest {
         PrintNode node = new PrintNode("test-node");
         Message message = new Message(Map.of("data", "hello"));
 
-        // process 호출 시 예외가 발생하지 않아야 함
         assertDoesNotThrow(() -> node.process(message));
     }
 
@@ -32,10 +31,28 @@ class PrintNodeTest {
     void testNodeInterfaceImplementation() {
         PrintNode printNode = new PrintNode("node-01");
 
-        // Node 타입 변수에 대입 가능한지 확인 (다형성)
         assertTrue(printNode instanceof Node);
 
-        Node node = printNode; // 컴파일 에러가 없으면 통과
+        Node node = printNode;
         assertNotNull(node);
+    }
+
+    @Test
+    @DisplayName("4. InputPort 조회")
+    void testGetInputPort() {
+        PrintNode node = new PrintNode("p1");
+
+        assertNotNull(node.getInputPort(), "PrintNode는 생성 시 InputPort를 가지고 있어야 함");
+    }
+
+    @Test
+    @DisplayName("5. InputPort를 통한 수신")
+    void testReceiveThroughPort() {
+        PrintNode node = new PrintNode("p1");
+        Message message = new Message(Map.of("data", "test-message"));
+
+        assertDoesNotThrow(() -> {
+            node.getInputPort().receive(message);
+        }, "InputPort로 메시지를 수신했을 때 오류 없이 처리되어야 함");
     }
 }

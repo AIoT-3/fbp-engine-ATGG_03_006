@@ -1,12 +1,18 @@
 package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
+import com.fbp.engine.node.PrintNode;
 
 public class DefaultInputPort implements InputPort {
+    private String name;
     private Node owner;
 
-    public DefaultInputPort(Node owner) {
+    public DefaultInputPort(String name, Node owner) {
+        this.name = name;
         this.owner = owner;
+    }
+
+    public DefaultInputPort(PrintNode printNode) {
     }
 
     public DefaultInputPort() {
@@ -22,6 +28,6 @@ public class DefaultInputPort implements InputPort {
 
     @Override
     public String getName() {
-        return "";
+        return this.name;
     }
 }

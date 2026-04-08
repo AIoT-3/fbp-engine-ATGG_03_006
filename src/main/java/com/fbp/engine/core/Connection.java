@@ -2,25 +2,37 @@ package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Connection {
     private final String id;
-    private final Queue<Message> buffer;
+    private BlockingQueue<Message> buffer;
     private InputPort target;
 
     public Connection(String id) {
+        this(id, 100);
+    }
+
+    public Connection(String id, int capacity) {
         this.id = id;
-        this.buffer = new LinkedList<>();
+        this.buffer = new LinkedBlockingQueue<>(capacity);
     }
 
     public void deliver(Message message) {
-        buffer.add(message);
+        try {
+            buffer.put(message);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-        if (target != null && !buffer.isEmpty()) {
-            Message msgDeliver = buffer.poll();
-            target.receive(msgDeliver);
+    public Message poll() {
+        try {
+            return buffer.take();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
         }
     }
 
