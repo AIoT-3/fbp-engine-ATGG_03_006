@@ -26,6 +26,11 @@ class GeneratorNodeTest {
             }
             @Override
             public String getName() { return "mock-target"; }
+
+            @Override
+            public void connect(Connection conn) {
+
+            }
         };
 
         Connection connection = new Connection("c1");

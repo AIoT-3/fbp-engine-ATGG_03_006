@@ -27,6 +27,16 @@ public class DefaultInputPortTest {
             public void process(Message message) {
                 isCalled[0] = true;
             }
+
+            @Override
+            public void initialize() {
+
+            }
+
+            @Override
+            public void shutdown() {
+
+            }
         };
 
         DefaultInputPort inputPort = new DefaultInputPort("in-1", owner);

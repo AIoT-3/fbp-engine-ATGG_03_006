@@ -25,6 +25,11 @@ public class ConnectionTest {
             }
             @Override
             public String getName() { return "target-port"; }
+
+            @Override
+            public void connect(Connection conn) {
+
+            }
         };
 
         connection.setTarget(target);
@@ -67,6 +72,11 @@ public class ConnectionTest {
             }
             @Override
             public String getName() { return "order-test"; }
+
+            @Override
+            public void connect(Connection conn) {
+
+            }
         };
 
         connection.setTarget(target);

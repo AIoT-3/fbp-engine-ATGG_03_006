@@ -6,17 +6,11 @@ import com.fbp.engine.node.PrintNode;
 public class DefaultInputPort implements InputPort {
     private String name;
     private Node owner;
+    private Connection connection;
 
     public DefaultInputPort(String name, Node owner) {
         this.name = name;
         this.owner = owner;
-    }
-
-    public DefaultInputPort(PrintNode printNode) {
-    }
-
-    public DefaultInputPort() {
-
     }
 
     @Override
@@ -29,5 +23,13 @@ public class DefaultInputPort implements InputPort {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public void connect(Connection conn) {
+        this.connection = conn;
+        if (conn != null) {
+            conn.setTarget(this);
+        }
     }
 }

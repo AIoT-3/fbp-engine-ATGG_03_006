@@ -28,6 +28,16 @@ public class GeneratorNode implements Node {
         //빈 구현
     }
 
+    @Override
+    public void initialize() {
+
+    }
+
+    @Override
+    public void shutdown() {
+
+    }
+
     public void generate(String key, Object value) {
         Message message = new Message(java.util.Map.of(key, value));
         outputPort.send(message);

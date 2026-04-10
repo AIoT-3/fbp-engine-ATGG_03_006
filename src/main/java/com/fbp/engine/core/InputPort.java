@@ -6,4 +6,6 @@ public interface InputPort {
     void receive(Message msgDeliver);
 
     String getName();
+
+    void connect(Connection conn);
 }

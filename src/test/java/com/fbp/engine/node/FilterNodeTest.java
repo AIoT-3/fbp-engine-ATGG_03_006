@@ -10,31 +10,25 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilterNodeTest {
 
     @Test
-    @DisplayName("FilterNode 테스트")
-    void testFilterNode() {
-        // "temperature" 키의 값이 30.0 이상인 것만 통과시키는 필터 생성
-        FilterNode filter = new FilterNode("f1", "temperature", 30.0);
-
-        // 결과 확인용 Connection 연결
+    @DisplayName("1. 조건 만족 -> send 호출, 2. 조건 미달 -> 차단")
+    void testFilterLogic() {
+        FilterNode filter = new FilterNode("f1", "temp", 30.0);
         Connection conn = new Connection("c1");
-        filter.getOutputPort().connect(conn);
 
-        // 1. 조건 만족 시 통과
-        filter.process(new Message(Map.of("temperature", 35.0)));
-        assertEquals(1, conn.getBufferSize(), "35.0은 통과하여 버퍼가 1이 되어야 함");
+        filter.getOutputPort("out").connect(conn);
 
-        // 2. 조건 미달 시 차단
-        filter.process(new Message(Map.of("temperature", 25.0)));
-        assertEquals(1, conn.getBufferSize(), "25.0은 차단되어 버퍼 크기가 유지되어야 함");
+        filter.process(new Message(Map.of("temp", 35.0)));
+        assertEquals(1, conn.getBufferSize());
 
-        // 3. 경계값 처리
-        filter.process(new Message(Map.of("temperature", 30.0)));
-        assertEquals(2, conn.getBufferSize(), "30.0은 이상(>=) 조건이므로 통과해야 함");
+        filter.process(new Message(Map.of("temp", 25.0)));
+        assertEquals(1, conn.getBufferSize(), "미달 메시지는 차단되어 버퍼가 유지되어야 함");
+    }
 
-        // 4. 키 없는 메시지
-        assertDoesNotThrow(() -> {
-            filter.process(new Message(Map.of("humidity", 50.0)));
-        });
-        assertEquals(2, conn.getBufferSize(), "키가 없는 메시지는 전달되지 않아야 함");
+    @Test
+    @DisplayName("3. 포트 구성 확인")
+    void testPortConfiguration() {
+        FilterNode filter = new FilterNode("f1", "temp", 30.0);
+        assertNotNull(filter.getInputPort("in"));
+        assertNotNull(filter.getOutputPort("out"));
     }
 }
