@@ -1,15 +1,13 @@
-package com.fbp.engine.node;
+package com.fbp.engine.core;
 
-import com.fbp.engine.core.*;
 import com.fbp.engine.message.Message;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractNode implements Node {
     protected String id;
-    private Map<String, InputPort> inputPorts;
-    private Map<String, OutputPort> outputPorts;
+    protected Map<String, InputPort> inputPorts;
+    protected Map<String, OutputPort> outputPorts;
 
     public AbstractNode(String id) {
         this.id = id;
@@ -24,9 +22,7 @@ public abstract class AbstractNode implements Node {
 
     @Override
     public void process(Message message) {
-        System.out.println("[" + id + "] processing message: " + message.getId());
         onProcess(message);
-        System.out.println("[" + id + "] processing completed.");
     }
 
     protected abstract void onProcess(Message message);
@@ -47,6 +43,14 @@ public abstract class AbstractNode implements Node {
         return outputPorts.get(name);
     }
 
+    public InputPort getInputPort() {
+        return inputPorts.get("in");
+    }
+
+    public OutputPort getOutputPort() {
+        return outputPorts.get("out");
+    }
+
     protected void send(String portName, Message message) {
         OutputPort port = outputPorts.get(portName);
         if (port != null) {
@@ -54,13 +58,29 @@ public abstract class AbstractNode implements Node {
         }
     }
 
+    public void connect(String outputPortName, AbstractNode targetNode, String inputPortName) {
+        OutputPort outPort = this.getOutputPort(outputPortName);
+        InputPort inPort = targetNode.getInputPort(inputPortName);
+
+        if (outPort != null && inPort != null) {
+            Connection connection = new Connection(id + "-" + targetNode.getId());
+            connection.setTarget(inPort);
+            outPort.connect(connection);
+            inPort.connect(connection);
+        }
+    }
+
     @Override
     public void initialize() {
-        System.out.println("[" + id + "] Initializing...");
     }
 
     @Override
     public void shutdown() {
-        System.out.println("[" + id + "] Shutting down...");
     }
+
+    public void start() {
+        initialize();
+    }
+
+    public abstract void deliver(Message m);
 }

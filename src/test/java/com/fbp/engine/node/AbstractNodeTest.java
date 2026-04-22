@@ -1,5 +1,6 @@
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.core.Connection;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,11 @@ class AbstractNodeTest {
         public TestNode(String id) { super(id); }
         @Override
         protected void onProcess(Message message) { onProcessCalled = true; }
+
+        @Override
+        public void deliver(Message m) {
+
+        }
 
         public void testAddInput(String name) { addInputPort(name); }
         public void testAddOutput(String name) { addOutputPort(name); }

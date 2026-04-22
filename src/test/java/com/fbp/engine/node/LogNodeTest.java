@@ -34,8 +34,19 @@ class LogNodeTest {
         final Message[] receivedAtB = {null};
         InputPort mockPortB = new InputPort() {
             @Override public void receive(Message m) { receivedAtB[0] = m; }
+
+            @Override
+            public void deliver(Message message) {
+
+            }
+
             @Override public String getName() { return "port-b"; }
             @Override public void connect(Connection c) { }
+
+            @Override
+            public void setTarget(InputPort port) {
+
+            }
         };
 
         connToB.setTarget(mockPortB);

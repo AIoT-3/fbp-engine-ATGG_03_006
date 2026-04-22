@@ -23,11 +23,22 @@ public class ConnectionTest {
             public void receive(Message message) {
                 received[0] = message;
             }
+
+            @Override
+            public void deliver(Message message) {
+
+            }
+
             @Override
             public String getName() { return "target-port"; }
 
             @Override
             public void connect(Connection conn) {
+
+            }
+
+            @Override
+            public void setTarget(InputPort port) {
 
             }
         };
@@ -70,11 +81,22 @@ public class ConnectionTest {
             public void receive(Message message) {
                 result.add(message.get("seq"));
             }
+
+            @Override
+            public void deliver(Message message) {
+
+            }
+
             @Override
             public String getName() { return "order-test"; }
 
             @Override
             public void connect(Connection conn) {
+
+            }
+
+            @Override
+            public void setTarget(InputPort port) {
 
             }
         };

@@ -1,7 +1,6 @@
 package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.PrintNode;
 
 public class DefaultInputPort implements InputPort {
     private String name;
@@ -21,6 +20,11 @@ public class DefaultInputPort implements InputPort {
     }
 
     @Override
+    public void deliver(Message message) {
+        receive(message);
+    }
+
+    @Override
     public String getName() {
         return this.name;
     }
@@ -32,4 +36,7 @@ public class DefaultInputPort implements InputPort {
             conn.setTarget(this);
         }
     }
+
+    @Override
+    public void setTarget(InputPort port) {}
 }

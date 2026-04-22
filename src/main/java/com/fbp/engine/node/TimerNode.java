@@ -1,5 +1,6 @@
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
 
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TimerNode extends AbstractNode{
+public class TimerNode extends AbstractNode {
     private final long intervalMs;
     private int tickCount = 0;
     private ScheduledExecutorService scheduler;
@@ -38,6 +39,11 @@ public class TimerNode extends AbstractNode{
             scheduler.shutdown();
         }
         super.shutdown();
+    }
+
+    @Override
+    public void deliver(Message m) {
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
 
 public class FilterNode extends AbstractNode {
@@ -26,5 +27,10 @@ public class FilterNode extends AbstractNode {
                 send("out", message);
             }
         }
+    }
+
+    @Override
+    public void deliver(Message m) {
+
     }
 }

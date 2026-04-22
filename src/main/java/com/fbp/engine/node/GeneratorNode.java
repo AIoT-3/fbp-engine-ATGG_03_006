@@ -1,45 +1,33 @@
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.DefaultOutputPort;
-import com.fbp.engine.core.Node;
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.core.OutputPort;
 import com.fbp.engine.message.Message;
+import java.util.Map;
 
-public class GeneratorNode implements Node {
-    private String id;
-    private DefaultOutputPort outputPort;
+public class GeneratorNode extends AbstractNode {
 
     public GeneratorNode(String id) {
-        this.id = id;
-        this.outputPort = new DefaultOutputPort();
+        super(id);
+        addOutputPort("out");
     }
 
-    public DefaultOutputPort getOutputPort() {
-        return outputPort;
-    }
-
-    @Override
-    public String getId() {
-        return id;
+    public OutputPort getOutputPort() {
+        return getOutputPort("out");
     }
 
     @Override
-    public void process(Message message) {
-        //빈 구현
+    protected void onProcess(Message message) {
     }
 
     @Override
-    public void initialize() {
-
-    }
-
-    @Override
-    public void shutdown() {
+    public void deliver(Message m) {
 
     }
 
     public void generate(String key, Object value) {
-        Message message = new Message(java.util.Map.of(key, value));
-        outputPort.send(message);
+        Message message = new Message(Map.of(key, value));
+
+        send("out", message);
     }
 }

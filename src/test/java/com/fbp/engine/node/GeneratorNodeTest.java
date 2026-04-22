@@ -24,11 +24,22 @@ class GeneratorNodeTest {
             public void receive(Message message) {
                 receivedMessages.add(message);
             }
+
+            @Override
+            public void deliver(Message message) {
+
+            }
+
             @Override
             public String getName() { return "mock-target"; }
 
             @Override
             public void connect(Connection conn) {
+
+            }
+
+            @Override
+            public void setTarget(InputPort port) {
 
             }
         };
