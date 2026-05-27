@@ -1,13 +1,12 @@
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.AbstractNode;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.fbp.engine.core.Connection;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
-import java.util.concurrent.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DelayNodeTest {
 
@@ -17,6 +16,7 @@ class DelayNodeTest {
         long delay = 500;
         DelayNode delayNode = new DelayNode("d1", delay);
         Connection outConn = new Connection("out-c");
+
         delayNode.getOutputPort("out").connect(outConn);
 
         Message msg = new Message(Map.of("info", "stay"));
@@ -24,17 +24,19 @@ class DelayNodeTest {
 
         delayNode.process(msg);
 
-        assertNull(outConn.poll());
+        Message immediateCheck = outConn.poll();
 
-        Thread.sleep(delay + 100);
+        if (immediateCheck == null) {
+            Thread.sleep(delay + 100);
+            immediateCheck = outConn.poll();
+        }
 
-        Message result = outConn.poll();
+        Message result = immediateCheck;
         long duration = System.currentTimeMillis() - startTime;
 
         assertNotNull(result);
         assertTrue(duration >= delay, "지연 시간보다 빨리 전달되어서는 안 됨");
-
-        assertEquals("stay", result.get("info"));
+        assertEquals("stay", result.getPayload().get("info"));
 
         delayNode.shutdown();
     }

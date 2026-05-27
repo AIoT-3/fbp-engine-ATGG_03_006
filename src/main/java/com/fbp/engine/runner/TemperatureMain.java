@@ -1,20 +1,31 @@
 package com.fbp.engine.runner;
 
 import com.fbp.engine.core.AbstractNode;
-import com.fbp.engine.node.AlertNode;
-import com.fbp.engine.node.TemperatureSensorNode;
-import com.fbp.engine.node.ThresholdFilterNode;
+import com.fbp.engine.node.*;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.TimerNode;
 
 public class TemperatureMain {
     public static void main(String[] args) {
         TimerNode timer = new TimerNode("timer", 1000);
-        TemperatureSensorNode sensor = new TemperatureSensorNode("sensor", 15.0, 45.0);
-        ThresholdFilterNode filter = new ThresholdFilterNode("filter", "temperature", 30.0);
-        AlertNode alert = new AlertNode("alert");
 
-        AbstractNode log = new AbstractNode("log") {
+        TemperatureSensorNode tempSensor = new TemperatureSensorNode("temp-sensor", 15.0, 45.0);
+        ThresholdFilterNode tempFilter = new ThresholdFilterNode("temp-filter", "temperature", 30.0);
+        AlertNode tempAlert = new AlertNode("temp-alert");
+
+        HumiditySensorNode humiSensor = new HumiditySensorNode("humi-sensor", 30.0, 90.0);
+        ThresholdFilterNode humiFilter = new ThresholdFilterNode("humi-filter", "humidity", 70.0);
+
+        AbstractNode humiAlert = new AbstractNode("humi-alert") {
+            @Override
+            protected void onProcess(Message message) {
+                System.out.println("[습도경보] 센서 " + message.get("sensorId") +
+                        " 습도 " + message.get("humidity") + "% — 임계값 초과!");
+            }
+            @Override
+            public void deliver(Message m) { onProcess(m); }
+        };
+
+        AbstractNode logNode = new AbstractNode("log-node") {
             @Override
             protected void onProcess(Message message) {
                 System.out.println("[정상] " + message.getPayload());
@@ -23,16 +34,25 @@ public class TemperatureMain {
             public void deliver(Message m) { onProcess(m); }
         };
 
-        timer.connect("out", sensor, "trigger");
-        sensor.connect("out", filter, "in");
-        filter.connect("alert", alert, "in");
-        filter.connect("normal", log, "in");
+        timer.connect("out", tempSensor, "trigger");
+        timer.connect("out", humiSensor, "trigger");
+
+        tempSensor.connect("out", tempFilter, "in");
+        tempFilter.connect("alert", tempAlert, "in");
+        tempFilter.connect("normal", logNode, "in");
+
+        humiSensor.connect("out", humiFilter, "in");
+        humiFilter.connect("alert", humiAlert, "in");
+        humiFilter.connect("normal", logNode, "in");
 
         timer.start();
-        sensor.start();
-        filter.start();
-        alert.start();
-        log.start();
+        tempSensor.start();
+        tempFilter.start();
+        tempAlert.start();
+        humiSensor.start();
+        humiFilter.start();
+        humiAlert.start();
+        logNode.start();
 
         try {
             Thread.sleep(10000);
@@ -41,11 +61,6 @@ public class TemperatureMain {
         }
 
         timer.shutdown();
-        sensor.shutdown();
-        filter.shutdown();
-        alert.shutdown();
-        log.shutdown();
-
-        System.out.println("모니터링이 종료되었습니다.");
+        System.out.println("통합 모니터링 종료");
     }
 }

@@ -23,7 +23,12 @@ public class Connection {
     }
 
     public void deliver(Message message) {
-        buffer.add(message);
+        try {
+            buffer.put(message);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
         if (this.target != null) {
             this.target.receive(message);
         }
@@ -31,15 +36,15 @@ public class Connection {
 
     public Message poll() {
         try {
-            return buffer.poll(); // take() 대신 poll()을 쓰거나 비어있는지 확인 필요
-        } catch (Exception e) {
+            return buffer.take();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return null;
         }
     }
 
     public void setTarget(InputPort target) {
         this.target = target;
-        // [추가] 만약 타겟이 설정될 때 버퍼에 대기 중인 메시지가 있다면 전달할 수도 있음
     }
 
     public int getBufferSize() {

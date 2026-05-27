@@ -22,15 +22,38 @@ class SplitNodeTest {
         matchResults = new ArrayList<>();
         mismatchResults = new ArrayList<>();
 
-        node.connect("match", new AbstractNode("m1") {
-            @Override protected void onProcess(Message m) { matchResults.add(m); }
-            @Override public void deliver(Message m) { }
-        }, "in");
+        AbstractNode matchTarget = new AbstractNode("m1") {
+            {
+                addInputPort("in");
+            }
 
-        node.connect("mismatch", new AbstractNode("m2") {
-            @Override protected void onProcess(Message m) { mismatchResults.add(m); }
-            @Override public void deliver(Message m) { }
-        }, "in");
+            @Override
+            protected void onProcess(Message m) {
+                matchResults.add(m);
+            }
+            @Override
+            public void deliver(Message m) {
+                onProcess(m);
+            }
+        };
+
+        AbstractNode mismatchTarget = new AbstractNode("m2") {
+            {
+                addInputPort("in");
+            }
+
+            @Override
+            protected void onProcess(Message m) {
+                mismatchResults.add(m);
+            }
+            @Override
+            public void deliver(Message m) {
+                onProcess(m);
+            }
+        };
+
+        node.connect("match", matchTarget, "in");
+        node.connect("mismatch", mismatchTarget, "in");
     }
 
     @Test

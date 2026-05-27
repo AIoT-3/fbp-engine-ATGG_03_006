@@ -15,21 +15,34 @@ class TransformNodeTest {
     @Test
     @DisplayName("변환 정상 동작")
     void testTransformSuccess() {
-        TransformNode node = new TransformNode("t1", (m) -> {
-            int val = (int) ((Map) m.getPayload()).get("value");
+        TransformNode node = new TransformNode("t1", m -> {
+            int val = (int) m.getPayload().get("value");
             return new Message(Map.of("value", val * 2));
         });
 
         List<Message> results = new ArrayList<>();
-        node.connect("out", new AbstractNode("mock") {
-            @Override protected void onProcess(Message m) { results.add(m); } // 여기서 담아야 함
-            @Override public void deliver(Message m) { }
-        }, "in");
 
+        AbstractNode mockTarget = new AbstractNode("mock") {
+            {
+                addInputPort("in");
+            }
+
+            @Override
+            protected void onProcess(Message m) {
+                results.add(m);
+            }
+
+            @Override
+            public void deliver(Message m) {
+                onProcess(m);
+            }
+        };
+
+        node.connect("out", mockTarget, "in");
         node.process(new Message(Map.of("value", 10)));
 
         assertEquals(1, results.size());
-        assertEquals(20, ((Map) results.get(0).getPayload()).get("value"));
+        assertEquals(20, (int) results.get(0).getPayload().get("value"));
     }
 
     @Test

@@ -18,6 +18,11 @@ public class SplitNode extends AbstractNode {
     }
 
     @Override
+    public void deliver(Message m) {
+        onProcess(m);
+    }
+
+    @Override
     protected void onProcess(Message message) {
         Map<String, Object> payload = (Map<String, Object>) message.getPayload();
         double value = Double.parseDouble(payload.get(key).toString());
@@ -28,7 +33,4 @@ public class SplitNode extends AbstractNode {
             send("mismatch", message);
         }
     }
-
-    @Override
-    public void deliver(Message m) { }
 }
